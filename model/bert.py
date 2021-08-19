@@ -3,12 +3,11 @@ import torch.nn as nn
 
 
 class BERT(nn.Module):
-    def __init__(self, vocab_dim, seq_len, embedding_dim, pad_token_id, device):
+    def __init__(self, vocab_dim, seq_len, embedding_dim, pad_token_id):
         super(BERT, self).__init__()
-        print(device)
         self.pad_token_id  = pad_token_id
         self.nhead         = 8
-        self.embedding     = BERTEmbedding(vocab_dim, seq_len, embedding_dim, device, dropout_rate=0.1)
+        self.embedding     = BERTEmbedding(vocab_dim, seq_len, embedding_dim, dropout_rate=0.1)
         self.encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=self.nhead, batch_first=True)
         self.encoder_block = nn.TransformerEncoder(self.encoder_layer, num_layers=8)
         
@@ -31,7 +30,7 @@ class BERT(nn.Module):
 
 
 class BERTEmbedding(nn.Module):
-    def __init__(self, vocab_dim, seq_len, embedding_dim, device, dropout_rate=0.1):
+    def __init__(self, vocab_dim, seq_len, embedding_dim, dropout_rate=0.1):
         super(BERTEmbedding, self).__init__()
         self.seq_len       = seq_len
         self.vocab_dim     = vocab_dim
@@ -52,11 +51,11 @@ class BERTEmbedding(nn.Module):
         
         
     def forward(self, data, segment_embedding):
+        device = data.get_device()
         token_embedding      = self.token_embedding(data)
         token_embedding      = self.token_dropout(token_embedding)
         
         positional_encoding  = torch.arange(start=0, end=self.seq_len, step=1).long()
-        # data의 device 정보 가져와서 처리
         positional_encoding  = positional_encoding.unsqueeze(0).expand(data.size()).to(device)
         positional_embedding = self.positional_embedding(positional_encoding)
         positional_embedding = self.positional_dropout(positional_embedding)

@@ -1,4 +1,5 @@
 import torch
+from tqdm import tqdm
 
 
 def train(model, iterator, optimizer, criterion, device, clip=1):

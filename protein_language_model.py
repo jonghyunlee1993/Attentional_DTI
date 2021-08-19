@@ -4,17 +4,16 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
 
 import torchtext
-import pickle
 
 import os
 import glob
+import pickle
 import numpy as np
 import pandas as pd
 from sklearn.utils import shuffle
-from tqdm import tqdm
 
-from model.bert import BERT
-from utils.protein_dataloader import ProteinLangaugeModelDataset
+from model.bert import BERT, MaskedLanguageModeling
+from utils.protein_dataloader import *
 from utils.trainer import train, evaluate, predict
 
 
@@ -38,7 +37,7 @@ def load_tokenizer():
 
 
 def define_model(vocab_dim, seq_len, embedding_dim, device):
-    bert_base = BERT(vocab_dim=vocab_dim, seq_len=seq_len, embedding_dim=embedding_dim, pad_token_id=1, device=device).to(device)
+    bert_base = BERT(vocab_dim=vocab_dim, seq_len=seq_len, embedding_dim=embedding_dim, pad_token_id=1).to(device)
     model     = MaskedLanguageModeling(bert_base, output_dim=vocab_dim).to(device)
 
     optimizer = optim.AdamW(model.parameters(), lr=1e-4, betas=[0.9, 0.999], weight_decay=0.01)
@@ -60,6 +59,9 @@ def check_trained_weights(output_path="output/ProteinNet/*.tsv", trained_weight=
 
 
 if __name__ == "__main__":
+    import warnings
+    warnings.filterwarnings(action='ignore')
+
     train_data, test_data = load_dataset()
     tokenizer = load_tokenizer()
     
@@ -71,8 +73,6 @@ if __name__ == "__main__":
     N_EPOCHS      = 1000
     PAITIENCE     = 50
 
-    print(DEVICE)
-
     output_path = "output/ProteinNet"
     weight_path = "weights"
 
@@ -83,6 +83,8 @@ if __name__ == "__main__":
     best_valid_loss = float('inf')
     optimizer.zero_grad()
     optimizer.step()
+
+    start_epoch, model = check_trained_weights()
 
     for epoch in range(start_epoch, N_EPOCHS):
 #     epoch_masking_rate = np.random.choice([0.3, 0.4, 0.5, 0.6])
@@ -96,7 +98,7 @@ if __name__ == "__main__":
                                                         batch_size=BATCH_SIZE, 
                                                         masking_rate=epoch_masking_rate,
                                                         collate_fn=collate_fn,
-                                                        num_workers=10
+                                                        num_workers=12
                                                         )
         
         valid_dataloader   = generate_epoch_dataloader(
@@ -106,7 +108,7 @@ if __name__ == "__main__":
                                                         batch_size=BATCH_SIZE, 
                                                         masking_rate=0.3,
                                                         collate_fn=collate_fn,
-                                                        num_workers=10
+                                                        num_workers=12
                                                         )
         
         print(f'Epoch: {epoch:04} Masking rate: {epoch_masking_rate} Train dataset: {len(epoch_train_data)} Valid dataset: {len(epoch_valid_data)}')
