@@ -67,16 +67,21 @@ class BERTEmbedding(nn.Module):
 
 
 class MaskedLanguageModeling(nn.Module):
-    def __init__(self, bert, output_dim):
+    def __init__(self, bert, output_dim, use_RNN=False):
         super(MaskedLanguageModeling, self).__init__()
         self.bert = bert
+        self.use_RNN = use_RNN
         d_model   = bert.embedding.token_embedding.weight.size(1)
-        self.rnn  = nn.GRU(d_model, d_model)
+        if self.use_RNN:
+            self.rnn  = nn.GRU(d_model, d_model)
         self.fc   = nn.Linear(d_model, output_dim)
     
     def forward(self, x, segment_embedding):
         output = self.bert(x, segment_embedding)
-        output, hidden = self.rnn(output)
+
+        if self.use_RNN:
+            output, hidden = self.rnn(output)
+
         output = self.fc(output)
         
         return output

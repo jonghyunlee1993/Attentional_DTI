@@ -38,7 +38,7 @@ def load_tokenizer():
 
 def define_model(vocab_dim, seq_len, embedding_dim, device):
     bert_base = BERT(vocab_dim=vocab_dim, seq_len=seq_len, embedding_dim=embedding_dim, pad_token_id=1).to(device)
-    model     = MaskedLanguageModeling(bert_base, output_dim=vocab_dim).to(device)
+    model     = MaskedLanguageModeling(bert_base, output_dim=vocab_dim, use_RNN=False).to(device)
 
     optimizer = optim.AdamW(model.parameters(), lr=1e-4, betas=[0.9, 0.999], weight_decay=0.01)
     # scheduler = CosineAnnealingLR(optimizer, T_max=10)
@@ -98,7 +98,7 @@ if __name__ == "__main__":
                                                         batch_size=BATCH_SIZE, 
                                                         masking_rate=epoch_masking_rate,
                                                         collate_fn=collate_fn,
-                                                        num_workers=12
+                                                        num_workers=8
                                                         )
         
         valid_dataloader   = generate_epoch_dataloader(
@@ -108,7 +108,7 @@ if __name__ == "__main__":
                                                         batch_size=BATCH_SIZE, 
                                                         masking_rate=0.3,
                                                         collate_fn=collate_fn,
-                                                        num_workers=12
+                                                        num_workers=8
                                                         )
         
         print(f'Epoch: {epoch:04} Masking rate: {epoch_masking_rate} Train dataset: {len(epoch_train_data)} Valid dataset: {len(epoch_valid_data)}')
@@ -127,7 +127,7 @@ if __name__ == "__main__":
             samples_for_prediction = shuffle(epoch_valid_data, n_samples=20)
             prediction_dataloader  = generate_epoch_prediction_dataloader(
                                                                             samples_for_prediction, 
-                                                                            seq_len=seq_len, 
+                                                                            seq_len=SEQ_LEN, 
                                                                             tokenizer=tokenizer, 
                                                                             batch_size=len(samples_for_prediction), 
                                                                             masking_rate=0.3, 
@@ -140,13 +140,13 @@ if __name__ == "__main__":
         if n_paitience < PAITIENCE:
             if best_valid_loss > valid_loss:
                 best_valid_loss = valid_loss
-                torch.save(model.state_dict(), os.path.join(weights_path, 'ProteinNet_LM_best.pt'))
+                torch.save(model.state_dict(), os.path.join(weight_path, 'ProteinNet_LM_best.pt'))
                 n_paitience = 0
             elif best_valid_loss <= valid_loss:
                 n_paitience += 1
         else:
             print("Early stop!")
-            model.load_state_dict(torch.load(os.path.join(weights_path, 'ProteinNet_LM_best.pt')))
+            model.load_state_dict(torch.load(os.path.join(weight_path, 'ProteinNet_LM_best.pt')))
             model.eval()
             break
 
