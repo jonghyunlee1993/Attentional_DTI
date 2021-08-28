@@ -9,7 +9,7 @@ def train(model, iterator, optimizer, criterion, device, clip=1):
     epoch_corrects = 0
     epoch_num_data = 0
 
-    for batch, (X, target, segment_emb, masking_label) in enumerate(tqdm(iterator)):
+    for X, target, segment_emb, masking_label in tqdm(iterator):
         
         optimizer.zero_grad()
         
@@ -47,7 +47,7 @@ def evaluate(model, iterator, optimizer, criterion, device):
     epoch_corrects = 0
     epoch_num_data = 0
 
-    for batch, (X, target, segment_emb, masking_label) in enumerate(iterator):
+    for X, target, segment_emb, masking_label in iterator:
         optimizer.zero_grad()
         
         output = model(X.to(device), segment_emb.long().to(device))
@@ -76,7 +76,7 @@ def evaluate(model, iterator, optimizer, criterion, device):
 def predict(model, iterator, device, tokenizer):
     model.eval()
     
-    for batch, (X, target, segment_emb, masking_label) in enumerate(iterator):
+    for X, target, segment_emb, masking_label in iterator:
         output = model(X.to(device), segment_emb.long().to(device))
     
         output_ = torch.argmax(output.clone().detach().to("cpu"), axis=-1)
