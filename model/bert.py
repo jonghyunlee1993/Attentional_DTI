@@ -3,13 +3,13 @@ import torch.nn as nn
 
 
 class BERT(nn.Module):
-    def __init__(self, vocab_dim, seq_len, embedding_dim, pad_token_id):
+    def __init__(self, vocab_dim, seq_len, embedding_dim, pad_token_id, num_head=8, num_layer=8):
         super(BERT, self).__init__()
         self.pad_token_id  = pad_token_id
-        self.nhead         = 8
+        self.num_head      = num_head
         self.embedding     = BERTEmbedding(vocab_dim, seq_len, embedding_dim, dropout_rate=0.1)
-        self.encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=self.nhead, batch_first=True)
-        self.encoder_block = nn.TransformerEncoder(self.encoder_layer, num_layers=8)
+        self.encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=self.num_head, batch_first=True)
+        self.encoder_block = nn.TransformerEncoder(self.encoder_layer, num_layers=num_layer)
         
         
     def forward(self, data, segment_embedding):
