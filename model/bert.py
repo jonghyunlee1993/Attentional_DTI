@@ -13,7 +13,7 @@ class BERT(nn.Module):
         
         
     def forward(self, data, segment_embedding):
-        pad_mask  = BERT.get_attn_pad_mask(data, data, self.pad_token_id).repeat(self.nhead, 1, 1)
+        pad_mask  = BERT.get_attn_pad_mask(data, data, self.pad_token_id).repeat(self.num_head, 1, 1)
         embedding = self.embedding(data, segment_embedding)
         output    = self.encoder_block(embedding, pad_mask) 
         

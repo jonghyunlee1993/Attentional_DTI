@@ -19,18 +19,18 @@ from utils.trainer import train, evaluate, predict
 
 def load_dataset():
     print("load dataset ... ")
-    with open("data/MoleculeNet_train.pickle", 'rb') as f:
+    with open("data/ProteinNet_train.pickle", 'rb') as f:
         train_data = pickle.load(f)
 
-    test_data  = train_data[:int(len(train_data) * 0.2)]
-    train_data = train_data[int(len(train_data) * 0.2):]
-    
+    with open("data/ProteinNet_test.pickle", "rb") as f:
+        test_data = pickle.load(f)
+
     return train_data, test_data
 
 
 def load_tokenizer():
     print("load tokenizer ... ")
-    with open("data/MoleculeNet_tokenizer.pickle", "rb") as f:
+    with open("data/ProteinNet_tokenizer.pickle", "rb") as f:
         tokenizer = pickle.load(f)
 
     return tokenizer
@@ -48,7 +48,7 @@ def define_model(vocab_dim, seq_len, embedding_dim, device, num_head=4, num_laye
     return model, optimizer, scheduler, criterion
 
 
-def check_trained_weights(output_path="output/MoleculeNet/*.tsv", trained_weight='weights/MoleculeNet_LM_best.pt'):
+def check_trained_weights(output_path="output/ProteinNet/*.tsv", trained_weight='weights/ProteinNet_LM_best.pt'):
     start_epoch = 0
     if len(glob.glob(output_path)) != 0:
         print(f"load pretrained model : {trained_weight}")
@@ -69,11 +69,11 @@ if __name__ == "__main__":
     SEQ_LEN       = 256
     EMBEDDING_DIM = 512
     DEVICE        = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    BATCH_SIZE    = 512
+    BATCH_SIZE    = 256
     N_EPOCHS      = 1000
     PAITIENCE     = 50
 
-    output_path = "output/MoleculeNet"
+    output_path = "output/ProteinNet"
     weight_path = "weights"
 
 
@@ -140,13 +140,13 @@ if __name__ == "__main__":
         if n_paitience < PAITIENCE:
             if best_valid_loss > valid_loss:
                 best_valid_loss = valid_loss
-                torch.save(model.state_dict(), os.path.join(weight_path, 'MoleculeNet_LM_best.pt'))
+                torch.save(model.state_dict(), os.path.join(weight_path, 'ProteinNet_LM_best.pt'))
                 n_paitience = 0
             elif best_valid_loss <= valid_loss:
                 n_paitience += 1
         else:
             print("Early stop!")
-            model.load_state_dict(torch.load(os.path.join(weight_path, 'MoleculeNet_LM_best.pt')))
+            model.load_state_dict(torch.load(os.path.join(weight_path, 'ProteinNet_LM_best.pt')))
             model.eval()
             break
 
