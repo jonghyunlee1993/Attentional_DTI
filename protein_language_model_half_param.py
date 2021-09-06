@@ -69,9 +69,9 @@ if __name__ == "__main__":
     SEQ_LEN       = 256
     EMBEDDING_DIM = 512
     DEVICE        = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    BATCH_SIZE    = 256
+    BATCH_SIZE    = 512
     N_EPOCHS      = 1000
-    PAITIENCE     = 50
+    PAITIENCE     = 10
 
     output_path = "output/ProteinNet"
     weight_path = "weights"
@@ -98,7 +98,7 @@ if __name__ == "__main__":
                                                         batch_size=BATCH_SIZE, 
                                                         masking_rate=epoch_masking_rate,
                                                         collate_fn=collate_fn,
-                                                        num_workers=8
+                                                        num_workers=4
                                                         )
         
         valid_dataloader   = generate_epoch_dataloader(
@@ -108,7 +108,7 @@ if __name__ == "__main__":
                                                         batch_size=BATCH_SIZE, 
                                                         masking_rate=0.3,
                                                         collate_fn=collate_fn,
-                                                        num_workers=8
+                                                        num_workers=4
                                                         )
         
         print(f'Epoch: {epoch:04} Masking rate: {epoch_masking_rate} Train dataset: {len(epoch_train_data)} Valid dataset: {len(epoch_valid_data)}')

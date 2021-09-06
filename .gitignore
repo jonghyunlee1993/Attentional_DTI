@@ -2,8 +2,6 @@ data
 data/*
 weights
 weights/*
-output
-output/*
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,linux,visualstudiocode,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,linux,visualstudiocode,jupyternotebooks

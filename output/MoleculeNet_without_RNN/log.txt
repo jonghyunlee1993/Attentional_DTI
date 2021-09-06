@@ -1,0 +1,2 @@
+epoch: 0000 train loss: 0.1938, train acc: 18.7465, test loss: 0.0993, test acc: 20.9256
+epoch: 0001 train loss: 0.1291, train acc: 19.1723, test loss: 0.0862, test acc: 21.0405
