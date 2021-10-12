@@ -32,10 +32,12 @@ def train(model, iterator, optimizer, criterion, device, clip=1):
         output_ = output.clone().detach().to('cpu')
         target_ = target.clone().detach().to('cpu')
 
-        unpad_mask      = (target_ != 1)
-        epoch_corrects += (output_.argmax(1)[unpad_mask] == target_[unpad_mask]).float().sum()
-        epoch_num_data += len(unpad_mask)
-        
+        o = output_[masking_label.bool()].numpy() 
+        t = target_[masking_label.bool()].numpy() 
+
+        epoch_corrects += np.sum(o == t)
+        epoch_num_data += len(o == t)
+
     return epoch_loss / len(iterator), 100 * epoch_corrects / epoch_num_data
 
 
@@ -65,9 +67,11 @@ def evaluate(model, iterator, optimizer, criterion, device):
         output_ = output.clone().detach().to('cpu')
         target_ = target.clone().detach().to('cpu')
         
-        unpad_mask      = (target_ != 1)
-        epoch_corrects += (output_.argmax(1)[unpad_mask] == target_[unpad_mask]).float().sum()
-        epoch_num_data += len(unpad_mask)
+        o = output_[masking_label.bool()].numpy() 
+        t = target_[masking_label.bool()].numpy() 
+
+        epoch_corrects += np.sum(o == t)
+        epoch_num_data += len(o == t)
         
     return epoch_loss / len(iterator), 100 * epoch_corrects / epoch_num_data
 

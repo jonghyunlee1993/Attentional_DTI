@@ -13,7 +13,7 @@ import pandas as pd
 from sklearn.utils import shuffle
 
 from model.bert import BERT, MaskedLanguageModeling
-from utils.protein_dataloader import *
+from utils.molecule_dataloader import *
 from utils.trainer import train, evaluate, predict
 
 
@@ -36,8 +36,8 @@ def load_tokenizer():
     return tokenizer
 
 
-def define_model(vocab_dim, seq_len, embedding_dim, device):
-    bert_base = BERT(vocab_dim=vocab_dim, seq_len=seq_len, embedding_dim=embedding_dim, pad_token_id=1).to(device)
+def define_model(vocab_dim, seq_len, embedding_dim, device, num_head=4, num_layer=4):
+    bert_base = BERT(vocab_dim=vocab_dim, seq_len=seq_len, embedding_dim=embedding_dim, pad_token_id=1, num_head=num_head, num_layer=num_layer).to(device)
     model     = MaskedLanguageModeling(bert_base, output_dim=vocab_dim, use_RNN=True).to(device)
 
     optimizer = optim.AdamW(model.parameters(), lr=1e-4, betas=[0.9, 0.999], weight_decay=0.01)
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     SEQ_LEN       = 256
     EMBEDDING_DIM = 512
     DEVICE        = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    BATCH_SIZE    = 256
+    BATCH_SIZE    = 512
     N_EPOCHS      = 1000
     PAITIENCE     = 50
 

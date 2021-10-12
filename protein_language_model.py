@@ -19,10 +19,10 @@ from utils.trainer import train, evaluate, predict
 
 def load_dataset():
     print("load dataset ... ")
-    with open("data/ProteinNet_train.pickle", 'rb') as f:
+    with open("data/protein_net/ProteinNet_train.pickle", 'rb') as f:
         train_data = pickle.load(f)
 
-    with open("data/ProteinNet_test.pickle", "rb") as f:
+    with open("data/protein_net/ProteinNet_test.pickle", "rb") as f:
         test_data = pickle.load(f)
 
     return train_data, test_data
@@ -30,15 +30,15 @@ def load_dataset():
 
 def load_tokenizer():
     print("load tokenizer ... ")
-    with open("data/ProteinNet_tokenizer.pickle", "rb") as f:
+    with open("data/protein_net/ProteinNet_tokenizer.pickle", "rb") as f:
         tokenizer = pickle.load(f)
 
     return tokenizer
 
 
-def define_model(vocab_dim, seq_len, embedding_dim, device):
-    bert_base = BERT(vocab_dim=vocab_dim, seq_len=seq_len, embedding_dim=embedding_dim, pad_token_id=1).to(device)
-    model     = MaskedLanguageModeling(bert_base, output_dim=vocab_dim, use_RNN=False).to(device)
+def define_model(vocab_dim, seq_len, embedding_dim, device, num_head=4, num_layer=4):
+    bert_base = BERT(vocab_dim=vocab_dim, seq_len=seq_len, embedding_dim=embedding_dim, pad_token_id=1, num_head=num_head, num_layer=num_layer).to(device)
+    model     = MaskedLanguageModeling(bert_base, output_dim=vocab_dim, use_RNN=True).to(device)
 
     optimizer = optim.AdamW(model.parameters(), lr=1e-4, betas=[0.9, 0.999], weight_decay=0.01)
     # scheduler = CosineAnnealingLR(optimizer, T_max=10)
@@ -69,9 +69,9 @@ if __name__ == "__main__":
     SEQ_LEN       = 256
     EMBEDDING_DIM = 512
     DEVICE        = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    BATCH_SIZE    = 256
+    BATCH_SIZE    = 512
     N_EPOCHS      = 1000
-    PAITIENCE     = 50
+    PAITIENCE     = 30
 
     output_path = "output/ProteinNet"
     weight_path = "weights"
@@ -98,7 +98,7 @@ if __name__ == "__main__":
                                                         batch_size=BATCH_SIZE, 
                                                         masking_rate=epoch_masking_rate,
                                                         collate_fn=collate_fn,
-                                                        num_workers=8
+                                                        num_workers=4
                                                         )
         
         valid_dataloader   = generate_epoch_dataloader(
@@ -108,7 +108,7 @@ if __name__ == "__main__":
                                                         batch_size=BATCH_SIZE, 
                                                         masking_rate=0.3,
                                                         collate_fn=collate_fn,
-                                                        num_workers=8
+                                                        num_workers=4
                                                         )
         
         print(f'Epoch: {epoch:04} Masking rate: {epoch_masking_rate} Train dataset: {len(epoch_train_data)} Valid dataset: {len(epoch_valid_data)}')
