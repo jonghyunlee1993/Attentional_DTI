@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from tqdm import tqdm
 
 
@@ -14,6 +15,8 @@ def train(model, iterator, optimizer, criterion, device, clip=1):
         optimizer.zero_grad()
         
         output = model(X.to(device), segment_emb.long().to(device))
+        output_ = torch.argmax(output.clone().detach().to("cpu"), axis=-1)
+        target_ = target.clone().detach().to('cpu')
         output_dim = output.shape[-1]
         
 #         output = output[masking_label.bool().to(device)].reshape(-1, output_dim)
@@ -28,9 +31,6 @@ def train(model, iterator, optimizer, criterion, device, clip=1):
         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
         
         optimizer.step()
-        
-        output_ = torch.argmax(output.clone().detach().to("cpu"), axis=-1)
-        target_ = target.clone().detach().to('cpu')
 
         output_ = output_[masking_label.bool()].numpy() 
         target_ = target_[masking_label.bool()].numpy() 
@@ -53,6 +53,8 @@ def evaluate(model, iterator, optimizer, criterion, device):
         optimizer.zero_grad()
         
         output = model(X.to(device), segment_emb.long().to(device))
+        output_ = torch.argmax(output.clone().detach().to("cpu"), axis=-1)
+        target_ = target.clone().detach().to('cpu')
         output_dim = output.shape[-1]
         
 #         output = output[masking_label.bool().to(device)].reshape(-1, output_dim)
@@ -63,9 +65,6 @@ def evaluate(model, iterator, optimizer, criterion, device):
         loss   = criterion(output, target)
         
         epoch_loss += loss.item()
-        
-        output_ = torch.argmax(output.clone().detach().to("cpu"), axis=-1)
-        target_ = target.clone().detach().to('cpu')
 
         output_ = output_[masking_label.bool()].numpy() 
         target_ = target_[masking_label.bool()].numpy() 
