@@ -29,14 +29,14 @@ def train(model, iterator, optimizer, criterion, device, clip=1):
         
         optimizer.step()
         
-        output_ = output.clone().detach().to('cpu')
+        output_ = torch.argmax(output.clone().detach().to("cpu"), axis=-1)
         target_ = target.clone().detach().to('cpu')
 
-        o = output_[masking_label.bool()].numpy() 
-        t = target_[masking_label.bool()].numpy() 
+        output_ = output_[masking_label.bool()].numpy() 
+        target_ = target_[masking_label.bool()].numpy() 
 
-        epoch_corrects += np.sum(o == t)
-        epoch_num_data += len(o == t)
+        epoch_corrects += np.sum(output_ == target_)
+        epoch_num_data += len(output_ == target_)
 
     return epoch_loss / len(iterator), 100 * epoch_corrects / epoch_num_data
 
@@ -64,14 +64,14 @@ def evaluate(model, iterator, optimizer, criterion, device):
         
         epoch_loss += loss.item()
         
-        output_ = output.clone().detach().to('cpu')
+        output_ = torch.argmax(output.clone().detach().to("cpu"), axis=-1)
         target_ = target.clone().detach().to('cpu')
-        
-        o = output_[masking_label.bool()].numpy() 
-        t = target_[masking_label.bool()].numpy() 
 
-        epoch_corrects += np.sum(o == t)
-        epoch_num_data += len(o == t)
+        output_ = output_[masking_label.bool()].numpy() 
+        target_ = target_[masking_label.bool()].numpy() 
+
+        epoch_corrects += np.sum(output_ == target_)
+        epoch_num_data += len(output_ == target_)
         
     return epoch_loss / len(iterator), 100 * epoch_corrects / epoch_num_data
 
