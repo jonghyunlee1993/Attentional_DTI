@@ -13,7 +13,7 @@ import pandas as pd
 from sklearn.utils import shuffle
 
 from model.bert import BERT, MaskedLanguageModeling
-from utils.protein_dataloader import *
+from utils.molecule_dataloader import *
 from utils.trainer import train, evaluate, predict
 
 

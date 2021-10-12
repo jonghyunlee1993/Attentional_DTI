@@ -19,10 +19,10 @@ from utils.trainer import train, evaluate, predict
 
 def load_dataset():
     print("load dataset ... ")
-    with open("data/ProteinNet_train.pickle", 'rb') as f:
+    with open("data/protein_net/ProteinNet_train.pickle", 'rb') as f:
         train_data = pickle.load(f)
 
-    with open("data/ProteinNet_test.pickle", "rb") as f:
+    with open("data/protein_net/ProteinNet_test.pickle", "rb") as f:
         test_data = pickle.load(f)
 
     return train_data, test_data
@@ -30,7 +30,7 @@ def load_dataset():
 
 def load_tokenizer():
     print("load tokenizer ... ")
-    with open("data/ProteinNet_tokenizer.pickle", "rb") as f:
+    with open("data/protein_net/ProteinNet_tokenizer.pickle", "rb") as f:
         tokenizer = pickle.load(f)
 
     return tokenizer
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     DEVICE        = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     BATCH_SIZE    = 512
     N_EPOCHS      = 1000
-    PAITIENCE     = 10
+    PAITIENCE     = 30
 
     output_path = "output/ProteinNet"
     weight_path = "weights"
