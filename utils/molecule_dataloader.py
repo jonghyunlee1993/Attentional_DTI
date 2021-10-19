@@ -87,7 +87,7 @@ def collate_fn(batch):
 
 def generate_epoch_dataloader(data, seq_len, tokenizer, masking_rate, batch_size, collate_fn, shuffle=True, num_workers=6):
     dataset    = MoleculeLangaugeModelDataset(data=data, seq_len=seq_len, tokenizer=tokenizer, masking_rate=masking_rate)
-    dataloader = torch.utils.data.DataLoader(dataset,batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, collate_fn=collate_fn)
+    dataloader = torch.utils.data.DataLoader(dataset,batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, collate_fn=collate_fn, pin_memory=True)
     
     return dataloader
 
