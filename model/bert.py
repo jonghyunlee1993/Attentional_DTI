@@ -8,7 +8,7 @@ class BERT(nn.Module):
         self.pad_token_id  = pad_token_id
         self.num_head      = num_head
         self.embedding     = BERTEmbedding(vocab_dim, seq_len, embedding_dim, dropout_rate=0.1)
-        self.encoder_layer = nn.TransformerEncoderLayer(d_model=512, nhead=self.num_head, batch_first=True)
+        self.encoder_layer = nn.TransformerEncoderLayer(d_model=embedding_dim, nhead=self.num_head, batch_first=True)
         self.encoder_block = nn.TransformerEncoder(self.encoder_layer, num_layers=num_layer)
         
         

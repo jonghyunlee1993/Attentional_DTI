@@ -66,10 +66,10 @@ if __name__ == "__main__":
     tokenizer = load_tokenizer()
     
     VOCAB_DIM     = len(tokenizer.vocab.itos)
-    SEQ_LEN       = 256
+    SEQ_LEN       = 1024
     EMBEDDING_DIM = 512
     DEVICE        = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    BATCH_SIZE    = 512
+    BATCH_SIZE    = 64
     N_EPOCHS      = 1000
     PAITIENCE     = 30
 

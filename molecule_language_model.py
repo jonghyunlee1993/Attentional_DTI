@@ -19,7 +19,7 @@ from utils.trainer import train, evaluate, predict
 
 def load_dataset():
     print("load dataset ... ")
-    with open("data/MoleculeNet_train.pickle", 'rb') as f:
+    with open("data/molecule_net/MoleculeNet_train.pickle", 'rb') as f:
         train_data = pickle.load(f)
 
     test_data  = train_data[:int(len(train_data) * 0.2)]
@@ -30,7 +30,7 @@ def load_dataset():
 
 def load_tokenizer():
     print("load tokenizer ... ")
-    with open("data/MoleculeNet_tokenizer.pickle", "rb") as f:
+    with open("data/molecule_net/MoleculeNet_tokenizer.pickle", "rb") as f:
         tokenizer = pickle.load(f)
 
     return tokenizer
@@ -66,12 +66,12 @@ if __name__ == "__main__":
     tokenizer = load_tokenizer()
     
     VOCAB_DIM     = len(tokenizer.vocab.itos)
-    SEQ_LEN       = 256
-    EMBEDDING_DIM = 512
+    SEQ_LEN       = 100
+    EMBEDDING_DIM = 128
     DEVICE        = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    BATCH_SIZE    = 512
+    BATCH_SIZE    = 2048
     N_EPOCHS      = 1000
-    PAITIENCE     = 50
+    PAITIENCE     = 10
 
     output_path = "output/MoleculeNet"
     weight_path = "weights"
@@ -98,7 +98,7 @@ if __name__ == "__main__":
                                                         batch_size=BATCH_SIZE, 
                                                         masking_rate=epoch_masking_rate,
                                                         collate_fn=collate_fn,
-                                                        num_workers=8
+                                                        num_workers=10
                                                         )
         
         valid_dataloader   = generate_epoch_dataloader(
@@ -108,7 +108,7 @@ if __name__ == "__main__":
                                                         batch_size=BATCH_SIZE, 
                                                         masking_rate=0.3,
                                                         collate_fn=collate_fn,
-                                                        num_workers=8
+                                                        num_workers=10
                                                         )
         
         print(f'Epoch: {epoch:04} Masking rate: {epoch_masking_rate} Train dataset: {len(epoch_train_data)} Valid dataset: {len(epoch_valid_data)}')
@@ -124,7 +124,7 @@ if __name__ == "__main__":
             f.write("epoch: {0:04d} train loss: {1:.4f}, train acc: {2:.4f}, test loss: {3:.4f}, test acc: {4:.4f}\n".format(epoch, train_loss, train_accuracy, valid_loss, valid_accuracy))
 
         if epoch % 1 == 0:
-            samples_for_prediction = shuffle(epoch_valid_data, n_samples=20)
+            samples_for_prediction = shuffle(epoch_valid_data, n_samples=100)
             prediction_dataloader  = generate_epoch_prediction_dataloader(
                                                                             samples_for_prediction, 
                                                                             seq_len=SEQ_LEN, 

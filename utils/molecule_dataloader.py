@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import Dataset
-
+from torch.nn.utils.rnn import pack_sequence
 
 class MoleculeLangaugeModelDataset(Dataset):
     def __init__(self, data, tokenizer, seq_len=128, masking_rate=0.15):
