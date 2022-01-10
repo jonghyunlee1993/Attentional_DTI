@@ -1,6 +1,7 @@
 import os 
 import re
 import copy
+import glob
 import pickle
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -285,9 +286,14 @@ if __name__ == "__main__":
     exp_v_num = 3
     if exp_v_num:
         dir_path = os.path.join('weights/molecule_bert', "exp" + str(exp_v_num))
-        if os.path.exists(os.path.join(dir_path, "*.ckpt")):
+
+        if glob.glob(dir_path + "/*.ckpt"):
             print(f"exp{str(exp_v_num)} is already exists!")
-            raise
+            
+            class CustomError(Exception):
+                pass
+            
+            raise CustomError("Change exp_v_num")
     else:
         dir_path = 'weights/molecule_bert'
 
