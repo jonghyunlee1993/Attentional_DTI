@@ -219,7 +219,7 @@ class Bert(pl.LightningModule):
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=5e-4)
         # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5)
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5000, gamma=0.9)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.9)
 
         # return {"optimizer": optimizer, "lr_scheduler": scheduler, "monitor": "valid_loss"}
         return {"optimizer": optimizer, "lr_scheduler": scheduler}
@@ -283,7 +283,7 @@ if __name__ == "__main__":
     )
 
     # 실험 버전
-    exp_v_num = 3
+    exp_v_num = 4
     if exp_v_num:
         dir_path = os.path.join('weights/molecule_bert', "exp" + str(exp_v_num))
 
