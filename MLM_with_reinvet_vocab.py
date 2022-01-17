@@ -303,5 +303,6 @@ if __name__ == "__main__":
         EarlyStopping('valid_loss', patience=3)
     ]
 
-    trainer = pl.Trainer(max_epochs=10, gpus=2, enable_progress_bar=True, callbacks=callbacks, accelerator="ddp", precision=16)
+    # trainer = pl.Trainer(max_epochs=10, gpus=2, enable_progress_bar=True, callbacks=callbacks, accelerator="ddp", precision=16)
+    trainer = pl.Trainer(max_epochs=10, gpus=1, enable_progress_bar=True, callbacks=callbacks, precision=16)
     trainer.fit(model, train_loader, valid_loader)
