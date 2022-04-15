@@ -1,3 +1,4 @@
-pickle-mixin
+einops
+PyTDC
 transformers
 pytorch-lightning
