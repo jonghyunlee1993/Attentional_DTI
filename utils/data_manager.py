@@ -64,20 +64,6 @@ class DTIDataset(Dataset):
         return molecule_sequence, protein_sequence, y
 
 
-# def collate_batch(batch):
-#     molecule_seq, protein_seq, y = [], [], []
-    
-#     for (molecule_seq_, protein_seq_, y_) in batch:
-#         molecule_seq.append(molecule_seq_)
-#         protein_seq.append(protein_seq_)
-#         y.append(y_)
-        
-#     molecule_seq = molecule_tokenizer.pad(molecule_seq, return_tensors="pt")
-#     protein_seq = protein_tokenizer.pad(protein_seq, return_tensors="pt")
-#     y = torch.tensor(y).float()
-    
-#     return molecule_seq, protein_seq, y
-
 class CollateBatch(object):
     def __init__(self, molecule_tokenizer, protein_tokenizer):
         self.molecule_tokenizer = molecule_tokenizer
@@ -102,8 +88,6 @@ def custom_dataloader(train_df, valid_df, test_df, batch_size, molecule_max_len=
 
     molecule_tokenizer = BertTokenizer.from_pretrained("data/drug/molecule_tokenizer", model_max_length=128)
     protein_tokenizer = BertTokenizer.from_pretrained("data/target/protein_tokenizer", do_lower_case=False)
-
-    
 
     train_dataset = DTIDataset(train_df, molecule_tokenizer, protein_tokenizer, molecule_max_len, protein_max_len)
     valid_dataset = DTIDataset(valid_df, molecule_tokenizer, protein_tokenizer, molecule_max_len, protein_max_len)
