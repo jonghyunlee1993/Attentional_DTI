@@ -4,7 +4,7 @@ from model.trainer import *
 
 
 if __name__ == "__main__":
-    dataset_name = "davis"
+    dataset_name = "kiba"
     
     molecule_max_len = 100
     protein_max_len = 1000
@@ -22,12 +22,12 @@ if __name__ == "__main__":
     cross_attention_layer = CrossAttentionLayer()
     attentional_dti = AttentionalDTI(molecule_bert, protein_bert, cross_attention_layer, cross_attn_depth=8)
 
-    callbacks = define_callbacks(project_name="long_protein_davis_8_layers")
+    callbacks = define_callbacks(project_name="long_protein_kiba_8_layers_temp")
     model = DTI_prediction(attentional_dti, learning_rate=1e-4, t_max=t_max)
 
     if n_gpus > 1:
-        trainer = pl.Trainer(max_epochs=n_epochs, gpus=n_gpus, enable_progress_bar=True, callbacks=callbacks, accelerator="ddp2")
+        trainer = pl.Trainer(max_epochs=n_epochs, gpus=n_gpus, enable_progress_bar=True, callbacks=callbacks, strategy="ddp")
     else:   
-        trainer = pl.Trainer(max_epochs=n_epochs, gpus=n_gpus, enable_progress_bar=True, callbacks=callbacks)
+        trainer = pl.Trainer(max_epochs=n_epochs, gpus=[1], enable_progress_bar=True, callbacks=callbacks)
 
     trainer.fit(model, train_data_loader, valid_data_loader)
